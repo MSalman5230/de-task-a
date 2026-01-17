@@ -2,7 +2,14 @@
 
 A data engineering pipeline for predicting customer credit risk (90-day default prediction) using transaction data.
 
+## Documentation
 
+- **[Feature Documentation](feature_documentation.md)** - Detailed explanation of all engineered features, their rationale, and credit risk interpretation
+- **[Data Preparation Script](data_prep/prepare_data.py)** - Implementation of feature engineering pipeline
+- **[Null Data Handling Strategy](null_data_handling_strategy.md)** - Strategy for handling missing values in labels and transactions datasets
+- **[Exploratory Data Analysis](Exploratory_Data_Analysis.ipynb)** - Exploratory analysis/visualization of the transaction data and feature distributions
+- **Below are the answers to the questions from the PDF**
+---
 
 ## Quick Start
 
@@ -50,12 +57,7 @@ A data engineering pipeline for predicting customer credit risk (90-day default 
    ```
    The API will be available at `http://localhost:8000`
 
-## Documentation
-
-- **[Feature Documentation](feature_documentation.md)** - Detailed explanation of all engineered features, their rationale, and credit risk interpretation
-- **[Data Preparation Script](data_prep/prepare_data.py)** - Implementation of feature engineering pipeline
-- **[Null Data Handling Strategy](null_data_handling_strategy.md)** - Strategy for handling missing values in labels and transactions datasets
-
+---
 
 ## Features
 
