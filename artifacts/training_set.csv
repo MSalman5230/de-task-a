@@ -1,0 +1,6 @@
+customer_id,txn_count,total_debit,total_credit,avg_amount,debit_to_credit_ratio,days_since_last_credit,income_stability_ratio,flag_consistent_salary,flag_risky_spend,flag_rent_mortgage,flag_subscription,defaulted_within_90d
+CUST_0001,3,-65.98,2500.0,811.34,0.026392000000000002,2,1.0,1,0,0,1,0
+CUST_0002,2,-650.0,1800.0,575.0,0.3611111111111111,2,1.0,1,0,1,0,1
+CUST_0003,2,-300.0,1200.0,450.0,0.25,1,1.0,1,0,0,0,0
+CUST_0004,2,-400.0,900.0,250.0,0.4444444444444444,2,1.0,1,0,1,0,1
+CUST_0005,1,0.0,6500.0,6500.0,0.0,3,1.0,1,0,0,0,0

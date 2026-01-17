@@ -1,0 +1,27 @@
+feature to implement during feature engineering:
+
+feature that are must::
+1.Number of transactions
+2.Total debit and total credit 
+3.Average transaction amount 
+
+
+4. (days_since_last_credit # for recency # good for tree but not for regression
+or
+has_recent_salary) keep days_since_last_credit as this is good for tress and can be used to derive has_recent_salary for regression model if required for model pereation in later stage
+this is imporatnt as task question is that customers are defaulting in 90 days
+and
+5. Income Stability Ratio (Trend Analysis)Feature Name: income_stability_ratioLogic: $\frac{\text{Total Credit (Last 30 Days)}}{\text{Average Monthly Credit (Lifetime)}}$
+
+
+
+from discription we need: to extact
+flag_consistant_salary it should look for "payroll", "salary", "dividend", "dwp", "payout","bonus". keys words for 90% months we have the users transaction recods. meaning users for a particular user it shoudl have one of this key word transaction in each mouth for 90% of time.
+
+flag_risky_spend: Look for: "bet", "casino", "crypto", "gambling".
+
+flag_rent_mortgage: Look for: "rent", "mortgage", "housing", "council".
+
+
+
+flag_subcription: netflix, amazon prime, hulu,
