@@ -272,7 +272,7 @@ Most of the solution for handling millions of transactions per day has already b
 
 Since this question could refer to either the API server (inference service) or the data pipeline (training data preparation), I will focus on **both** aspects, as both are critical for production ML systems.
 
-#### API Server (FastAPI Inference Service) Metrics
+### API Server (FastAPI Inference Service) Metrics
 
 **Performance Metrics:**
 - **Request Latency (P50, P95, P99)**: Track prediction response times to ensure we meet the <100ms SLA. P95/P99 help identify outliers and performance degradation
@@ -301,7 +301,7 @@ Since this question could refer to either the API server (inference service) or 
 - Memory usage > 80%
 - Container restart count > 3 in 5 minutes
 
-#### Data Pipeline Metrics
+### Data Pipeline Metrics
 
 **Input Data Quality Metrics:**
 - **Schema Validation**: Alert when input data (labels.csv, transactions.csv) doesn't match expected schema (column names, data types, required fields)
@@ -325,7 +325,7 @@ Since this question could refer to either the API server (inference service) or 
 - Missing value rate > 20% for critical columns
 - Pipeline job failure
 
-#### What Could Go Wrong with This Model in Production?
+### What Could Go Wrong with This Model in Production?
 
 **Data Quality Issues:**
 - **Schema Changes**: If transaction or label CSV schemas change without notification, transformations will fail or produce incorrect features
