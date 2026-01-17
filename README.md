@@ -85,16 +85,16 @@ The FastAPI service provides a REST API for making credit risk predictions.
 }
 ```
 
-## Part 3: Documentation As 
+# Part 3: Documentation and Questions Answers as per task
 
 
-**Q1. What part of the exercise did you find most challenging, and why?**
+## **Q1. What part of the exercise did you find most challenging, and why?**
 
 The most significant challenge was working with limited data—only 11 rows of transaction data spanning just 3 days of transaction timestamps. This constraint required making careful assumptions about data patterns and customer behavior, making it difficult to identify robust patterns suitable for production pipelines.
 
 The sparse transaction history limited the ability to extract meaningful temporal patterns, seasonal trends, and behavioral signals. Particularly challenging was the description field—with more diverse and detailed transaction descriptions, we could extract richer insights into spending behavior (merchant categories, payment types, transaction purposes) that would significantly enhance credit risk prediction. The limited sample size meant that feature engineering decisions had to balance between capturing meaningful signals.
 
-**Q2. What tradeoffs did you make? (e.g., speed vs. accuracy, simplicity vs. completeness)**
+## **Q2. What tradeoffs did you make? (e.g., speed vs. accuracy, simplicity vs. completeness)**
 
 The tradeoffs varied by feature based on their importance for the 90-day default prediction task:
 
@@ -102,13 +102,13 @@ The tradeoffs varied by feature based on their importance for the 90-day default
 
 - **Flag Risky Spend**: Prioritized **speed and simplicity**. A single occurrence of gambling, betting, or crypto-related transactions flags a customer as risky. While a consistency-based approach (similar to salary) would be more accurate, the logical deduction is that even one instance of risky spending behavior indicates elevated risk—someone who gambles once is already showing signs of financial risk-taking behavior. This simpler approach balances detection speed with practical risk assessment.
 
-**Q3. Assume this needs to run in production with these constraints:**
+## **Q3. Assume this needs to run in production with these constraints:**
 - Cloud provider: Azure
 - Budget: £500/month
 - Latency requirement: <100ms per prediction
 - Expected traffic: 1000 predictions/hour initially
 
-## Production Deployment Solution
+### Production Deployment Solution
 
 Given the lightweight nature of the `model.joblib` artifact and the current FastAPI implementation (which uses async endpoints) changes i made compared to the template provided, the service can easily handle 1000 predictions/hour on Azure Container Apps with minimal resource allocation.
 
