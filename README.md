@@ -165,7 +165,7 @@ Here I will explain how I envision this full stack will be deployed while keepin
 - **Versioning Strategy**: `training_set/v1.0/`, `training_set/v1.1/`, etc.
   - Each version includes metadata: feature schema, data quality metrics, creation timestamp
 
-### 2. Model Training (Databricks or Azure ML)
+#### 2. Model Training (Databricks or Azure ML)
 **Use Databricks or Azure ML**
 **Training Pipeline:**
 - Loads versioned training dataset from Delta Lake
@@ -173,7 +173,7 @@ Here I will explain how I envision this full stack will be deployed while keepin
 - Validates model performance and generates metrics
 - Exports trained model artifact (`.joblib` or `.pkl` format)
 
-### 3. Model Artifact Storage (Azure Blob Storage)
+#### 3. Model Artifact Storage (Azure Blob Storage)
 
 **Blob Storage Structure with Versioning:**
 ```
@@ -195,7 +195,7 @@ azure-blob://ml-models-prod/
 - **Security**: Managed identities and access policies for secure access control
 - **Integration**: Works seamlessly with Azure services (Azure Container Apps, Azure Functions, VMs)
 
-### 4. FastAPI Service Deployment
+#### 4. FastAPI Service Deployment
 
 **Container-based Deployment on Azure Container Apps:**
 
@@ -220,7 +220,7 @@ The FastAPI service is deployed as a containerized application on Azure Containe
 
 - **Azure Container Apps Deployment**: The containerized application is deployed to Azure Container Apps, which provides auto-scaling capabilities, load balancing, and high availability for the inference service. Container Apps manages the container lifecycle and ensures the service remains available under varying traffic loads. The pay-as-you-go pricing model ensures cost efficiency, charging only for active compute time.
 
-### Key Advantages of This Architecture
+#### Key Advantages of This Architecture
 
 1. **Scalability**: Databricks Spark handles millions of rows; Azure Blob Storage scales to any model size
 2. **Versioning**: Both training data (Delta Lake) and models (Azure Blob Storage) are versioned for reproducibility
@@ -229,10 +229,119 @@ The FastAPI service is deployed as a containerized application on Azure Containe
 5. **Reliability**: Azure Blob Storage provides high durability and availability
 6. **Flexibility**: Easy to update models without redeploying the API service
 
-### Model Updates & Rollback
+#### Model Updates & Rollback
 
 - **Update**: New model versions are uploaded to blob storage with versioned paths. The service can be configured to load a specific model version by updating the model path configuration and restarting the Container Apps service.
 
 - **Rollback**: In case of model performance degradation, the service can be quickly rolled back to a previous model version by updating the model path configuration to point to the previous version and restarting the Container Apps service.
 
 - **A/B Testing**: Multiple Container Apps revisions can be deployed with different model versions, allowing traffic to be routed between different model versions for performance comparison and gradual rollout strategies.
+
+## **Q5. If transaction volume jumped from thousands to millions per day, how would you rethink Part 1?**
+
+Most of the solution for handling millions of transactions per day has already been addressed in **Q4, Section 1: Data Preparation (Azure Databricks Spark)**. Here, we expand on the approach for processing large-scale transaction data:
+
+#### Scalable Data Processing Architecture
+
+**Azure Databricks for Large-Scale Processing:**
+- **Distributed Computing**: Databricks Spark enables parallel processing of millions of transaction rows across multiple nodes, dramatically reducing processing time compared to single-machine processing
+- **Auto-scaling Clusters**: Databricks automatically scales compute resources up or down based on workload, ensuring cost efficiency while maintaining performance
+- **PySpark Implementation**: We will write a similar notebook to `prepare_data.py` for Databricks using PySpark, translating the feature engineering logic to distributed Spark operations
+
+**Automated Data Pipeline with Blob Storage Triggers:**
+- **Event-Driven Processing**: When new label and transaction datasets land in Azure Blob Storage, blob storage triggers automatically initiate the Databricks job
+- **Scheduled Processing**: For regular batch processing, we can configure scheduled Databricks jobs (e.g., daily, hourly) to process new data as it arrives
+- **Incremental Processing**: The pipeline can be designed to process only new or changed data since the last run, reducing compute costs and processing time
+
+**Delta Lake for Versioning and Data Management:**
+- **ACID Transactions**: Delta Lake ensures data consistency during concurrent writes, critical when processing millions of transactions
+- **Time Travel**: Enables querying historical versions of the data, useful for debugging and auditing
+- **Schema Evolution**: Handles schema changes gracefully without breaking the pipeline
+- **Partitioning**: Efficient partitioning strategies (e.g., by date, customer_id) enable fast queries and processing on large datasets
+- **Versioning Strategy**: Each processed dataset version is stored in Delta Lake with metadata (processing timestamp, data quality metrics, feature schema), enabling full traceability
+
+#### Key Improvements Over Single-Machine Processing
+
+1. **Performance**: Distributed processing reduces feature engineering time from hours/days to minutes
+2. **Scalability**: Can handle millions of transactions per day without performance degradation
+3. **Reliability**: Automated triggers and scheduling ensure data is processed consistently
+4. **Cost Efficiency**: Pay only for compute time used, with auto-scaling to minimize idle costs
+5. **Data Quality**: Delta Lake's ACID properties ensure data integrity at scale
+
+## **Q6. What metrics would you track in production and why? What could go wrong with this model in production?**
+
+Since this question could refer to either the API server (inference service) or the data pipeline (training data preparation), I will focus on **both** aspects, as both are critical for production ML systems.
+
+#### API Server (FastAPI Inference Service) Metrics
+
+**Performance Metrics:**
+- **Request Latency (P50, P95, P99)**: Track prediction response times to ensure we meet the <100ms SLA. P95/P99 help identify outliers and performance degradation
+- **Throughput (requests/second)**: Monitor request rate to understand traffic patterns and capacity planning
+- **Error Rate**: Track HTTP error rates (4xx, 5xx) to identify API issues, invalid requests, or service failures
+- **Model Inference Time**: Separate metric for actual model prediction time (excluding network overhead) to detect model performance degradation
+
+**Availability & Reliability Metrics:**
+- **Uptime / Availability**: Track service availability percentage (target: 99.9%+)
+- **Container Health**: Monitor container restart counts, memory usage, CPU utilization
+- **Request Success Rate**: Percentage of successful predictions vs. total requests
+
+**Business Metrics:**
+- **Prediction Distribution**: Track distribution of predicted probabilities to detect model drift (e.g., if predictions become consistently higher/lower over time)
+- **Request Volume Trends**: Monitor daily/hourly request patterns for capacity planning
+
+**Infrastructure Metrics:**
+- **Memory Usage**: Track container memory consumption to prevent OOM (Out of Memory) errors
+- **CPU Utilization**: Monitor CPU usage to optimize resource allocation and costs
+- **Active Replicas**: Track number of active container replicas for cost monitoring
+
+**Alerting Thresholds:**
+- Latency P95 > 100ms
+- Error rate > 1%
+- Availability < 99.5%
+- Memory usage > 80%
+- Container restart count > 3 in 5 minutes
+
+#### Data Pipeline Metrics
+
+**Input Data Quality Metrics:**
+- **Schema Validation**: Alert when input data (labels.csv, transactions.csv) doesn't match expected schema (column names, data types, required fields)
+- **Data Completeness**: Track missing value rates per column to detect data quality issues
+- **Data Volume Anomalies**: Alert when daily transaction volume deviates significantly from historical patterns (e.g., ±50% change)
+- **Date Range Validation**: Verify transaction timestamps are within expected ranges and detect missing date periods
+
+**Transformation Pipeline Metrics:**
+- **Feature Engineering Success Rate**: Track percentage of records successfully transformed (vs. failed transformations)
+- **Null Value Handling**: Monitor counts of records requiring null imputation to detect data quality degradation
+- **Keyword Detection Rates**: Monitor counts of transactions matching keyword patterns (rent, payroll, etc.) to detect changes in transaction descriptions. Additionally, track new keywords/descriptions that appear in transaction data to identify opportunities for adding new feature flags if they prove relevant for credit risk prediction
+
+**Pipeline Execution Metrics:**
+- **Job Success/Failure Rate**: Track Databricks job completion rates
+- **Processing Time**: Monitor feature engineering pipeline duration to detect performance issues
+- **Records Processed**: Track number of records processed per run to ensure data completeness
+- **Delta Lake Write Success**: Monitor successful writes to Delta Lake tables
+
+**Alerting for Data Pipeline:**
+- Schema mismatch detected in input files
+- Missing value rate > 20% for critical columns
+- Pipeline job failure
+
+#### What Could Go Wrong with This Model in Production?
+
+**Data Quality Issues:**
+- **Schema Changes**: If transaction or label CSV schemas change without notification, transformations will fail or produce incorrect features
+- **Missing Critical Data**: If salary transactions or key behavioral indicators are missing, feature engineering will produce incomplete or misleading features
+- **Data Format Changes**: Changes in transaction description formats (e.g., new merchant naming conventions) could break keyword detection logic
+- **Label Data Quality**: If label data (default flags) is incorrect or delayed, model training will produce unreliable models
+
+**Model Performance Degradation:**
+- **Data Drift**: Customer behavior patterns change over time (e.g., new spending categories, payment methods), making historical features less predictive
+- **Concept Drift**: The relationship between features and default risk changes (e.g., economic conditions, market changes), reducing model accuracy
+- **Feature Distribution Shift**: Input feature distributions change significantly, causing model predictions to become unreliable
+
+**Infrastructure Issues:**
+- **Model Loading Failures**: If model artifact cannot be loaded from blob storage (network issues, authentication failures), service becomes unavailable
+- **Resource Exhaustion**: Under high traffic, containers may run out of memory or CPU, causing service degradation
+- **Blob Storage Latency**: High latency when loading models from blob storage could impact startup time and model reload operations
+
+**Operational Issues:**
+- **Version Mismatches**: Deploying a new model version that expects different features than what the API provides
