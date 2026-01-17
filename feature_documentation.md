@@ -264,19 +264,19 @@ Standard deviation of transaction amounts would be more informative because:
 
 ## Feature Summary Table
 
-| Feature # | Feature Name | Type | Category | Predictive Power |
-|-----------|--------------|------|----------|-----------------|
-| 1 | `txn_count` | Numeric | Volume | Low-Medium (better alternatives exist) |
-| 2 | `total_debit` | Numeric | Amount | Medium |
-| 3 | `total_credit` | Numeric | Amount | Medium |
-| 4 | `avg_amount` | Numeric | Amount | Low-Medium (better alternatives exist) |
-| 5 | `debit_to_credit_ratio` | Numeric | Amount | **High** |
-| 6 | `days_since_last_credit` | Numeric | Temporal | **High** |
-| 7 | `income_stability_ratio` | Numeric | Temporal | **High** |
-| 8 | `flag_consistent_salary` | Binary | Behavioral | **High** |
-| 9 | `flag_risky_spend` | Binary | Behavioral | Medium-High |
-| 10 | `flag_rent_mortgage` | Binary | Behavioral | Medium (context-dependent) |
-| 11 | `flag_subscription` | Binary | Behavioral | Low-Medium (context-dependent) |
+| Feature # | Feature Name | Type | Category |
+|-----------|--------------|------|----------|
+| 1 | `txn_count` | Numeric | Volume |
+| 2 | `total_debit` | Numeric | Amount |
+| 3 | `total_credit` | Numeric | Amount |
+| 4 | `avg_amount` | Numeric | Amount |
+| 5 | `debit_to_credit_ratio` | Numeric | Amount |
+| 6 | `days_since_last_credit` | Numeric | Temporal |
+| 7 | `income_stability_ratio` | Numeric | Temporal |
+| 8 | `flag_consistent_salary` | Binary | Behavioral |
+| 9 | `flag_risky_spend` | Binary | Behavioral |
+| 10 | `flag_rent_mortgage` | Binary | Behavioral |
+| 11 | `flag_subscription` | Binary | Behavioral |
 
 ---
 
