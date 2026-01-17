@@ -8,7 +8,7 @@ A data engineering pipeline for predicting customer credit risk (90-day default 
 - **[Data Preparation Script](data_prep/prepare_data.py)** - Implementation of feature engineering pipeline
 - **[Null Data Handling Strategy](null_data_handling_strategy.md)** - Strategy for handling missing values in labels and transactions datasets
 - **[Exploratory Data Analysis](Exploratory_Data_Analysis.ipynb)** - Exploratory analysis/visualization of the transaction data and feature distributions
-- **Below are the answers to the questions from the PDF**
+- **[Answers to Questions from PDF](#questions-answers-as-per-pdf)** - Answers to the questions asked in the PDF task specification
 ---
 
 ## Quick Start
