@@ -274,74 +274,47 @@ Since this question could refer to either the API server (inference service) or 
 
 ### API Server (FastAPI Inference Service) Metrics
 
-**Performance Metrics:**
-- **Request Latency (P50, P95, P99)**: Track prediction response times to ensure we meet the <100ms SLA. P95/P99 help identify outliers and performance degradation
-- **Throughput (requests/second)**: Monitor request rate to understand traffic patterns and capacity planning
-- **Error Rate**: Track HTTP error rates (4xx, 5xx) to identify API issues, invalid requests, or service failures
-- **Model Inference Time**: Separate metric for actual model prediction time (excluding network overhead) to detect model performance degradation
+**Key Metrics to Track:**
+- **Request Latency (P50, P95, P99)**: Ensure <100ms SLA compliance; P95/P99 identify outliers
+- **Throughput & Error Rate**: Monitor request rate and HTTP error rates (4xx, 5xx) for capacity planning and issue detection
+- **Model Inference Time**: Track actual prediction time (excluding network overhead) to detect performance degradation
+- **Availability & Container Health**: Monitor uptime (target: 99.9%+), container restarts, memory/CPU usage
+- **Prediction Distribution**: Track probability distributions to detect model drift
+- **Active Replicas**: Monitor for cost optimization
 
-**Availability & Reliability Metrics:**
-- **Uptime / Availability**: Track service availability percentage (target: 99.9%+)
-- **Container Health**: Monitor container restart counts, memory usage, CPU utilization
-- **Request Success Rate**: Percentage of successful predictions vs. total requests
-
-**Business Metrics:**
-- **Prediction Distribution**: Track distribution of predicted probabilities to detect model drift (e.g., if predictions become consistently higher/lower over time)
-- **Request Volume Trends**: Monitor daily/hourly request patterns for capacity planning
-
-**Infrastructure Metrics:**
-- **Memory Usage**: Track container memory consumption to prevent OOM (Out of Memory) errors
-- **CPU Utilization**: Monitor CPU usage to optimize resource allocation and costs
-- **Active Replicas**: Track number of active container replicas for cost monitoring
-
-**Alerting Thresholds:**
-- Latency P95 > 100ms
-- Error rate > 1%
-- Availability < 99.5%
-- Memory usage > 80%
-- Container restart count > 3 in 5 minutes
+**Alerting Thresholds:** Latency P95 > 100ms, Error rate > 1%, Availability < 99.5%, Memory usage > 80%, Container restarts > 3 in 5 minutes
 
 ### Data Pipeline Metrics
 
-**Input Data Quality Metrics:**
-- **Schema Validation**: Alert when input data (labels.csv, transactions.csv) doesn't match expected schema (column names, data types, required fields)
-- **Data Completeness**: Track missing value rates per column to detect data quality issues
-- **Data Volume Anomalies**: Alert when daily transaction volume deviates significantly from historical patterns (e.g., ±50% change)
-- **Date Range Validation**: Verify transaction timestamps are within expected ranges and detect missing date periods
+**Input Data Quality (Critical for Transformation Success):**
+- **Schema Validation**: Alert when labels.csv or transactions.csv don't match expected schema (columns, data types, required fields)
+- **Data Completeness & Volume Anomalies**: Track missing value rates and alert on significant volume deviations (±50%)
+- **Date Range Validation**: Verify transaction timestamps are within expected ranges
 
-**Transformation Pipeline Metrics:**
-- **Feature Engineering Success Rate**: Track percentage of records successfully transformed (vs. failed transformations)
-- **Null Value Handling**: Monitor counts of records requiring null imputation to detect data quality degradation
-- **Keyword Detection Rates**: Monitor counts of transactions matching keyword patterns (rent, payroll, etc.) to detect changes in transaction descriptions. Additionally, track new keywords/descriptions that appear in transaction data to identify opportunities for adding new feature flags if they prove relevant for credit risk prediction
+**Transformation Pipeline:**
+- **Feature Engineering Success Rate**: Track successful vs. failed transformations
+- **Keyword Detection & New Keywords**: Monitor existing keyword patterns and identify new transaction descriptions that could become feature flags
+- **Null Value Handling**: Monitor records requiring imputation
 
-**Pipeline Execution Metrics:**
-- **Job Success/Failure Rate**: Track Databricks job completion rates
-- **Processing Time**: Monitor feature engineering pipeline duration to detect performance issues
-- **Records Processed**: Track number of records processed per run to ensure data completeness
-- **Delta Lake Write Success**: Monitor successful writes to Delta Lake tables
+**Pipeline Execution:**
+- **Job Success Rate, Processing Time, Records Processed**: Track Databricks job completion, duration, and data completeness
+- **Delta Lake Write Success**: Monitor successful writes
 
-**Alerting for Data Pipeline:**
-- Schema mismatch detected in input files
-- Missing value rate > 20% for critical columns
-- Pipeline job failure
+**Alerting:** Schema mismatch, Missing value rate > 20% for critical columns, Pipeline job failure
 
 ### What Could Go Wrong with This Model in Production?
 
 **Data Quality Issues:**
-- **Schema Changes**: If transaction or label CSV schemas change without notification, transformations will fail or produce incorrect features
-- **Missing Critical Data**: If salary transactions or key behavioral indicators are missing, feature engineering will produce incomplete or misleading features
-- **Data Format Changes**: Changes in transaction description formats (e.g., new merchant naming conventions) could break keyword detection logic
-- **Label Data Quality**: If label data (default flags) is incorrect or delayed, model training will produce unreliable models
+- **Schema/Format Changes**: Unexpected changes to CSV schemas or transaction description formats break transformations and keyword detection
+- **Missing Critical Data**: Absence of salary transactions or key behavioral indicators produces incomplete features
+- **Label Data Quality**: Incorrect or delayed default flags result in unreliable model training
 
 **Model Performance Degradation:**
-- **Data Drift**: Customer behavior patterns change over time (e.g., new spending categories, payment methods), making historical features less predictive
-- **Concept Drift**: The relationship between features and default risk changes (e.g., economic conditions, market changes), reducing model accuracy
-- **Feature Distribution Shift**: Input feature distributions change significantly, causing model predictions to become unreliable
+- **Data Drift**: Customer behavior patterns change (new spending categories, payment methods), making historical features less predictive
+- **Concept Drift**: Relationship between features and default risk changes due to economic/market conditions
+- **Feature Distribution Shift**: Significant changes in input feature distributions cause unreliable predictions
 
-**Infrastructure Issues:**
-- **Model Loading Failures**: If model artifact cannot be loaded from blob storage (network issues, authentication failures), service becomes unavailable
-- **Resource Exhaustion**: Under high traffic, containers may run out of memory or CPU, causing service degradation
-- **Blob Storage Latency**: High latency when loading models from blob storage could impact startup time and model reload operations
-
-**Operational Issues:**
-- **Version Mismatches**: Deploying a new model version that expects different features than what the API provides
+**Infrastructure & Operational Issues:**
+- **Model Loading Failures**: Network/authentication issues prevent loading models from blob storage
+- **Resource Exhaustion**: High traffic causes memory/CPU exhaustion, leading to service degradation
+- **Version Mismatches**: New model versions expect different features than the API provides
