@@ -1,0 +1,34 @@
+## PERSONAL NOTE:
+** WARNING!! ** 
+I mostly type too fast and fat finger everything and now i know AI fixes spelling and grammar so I dont even try to write correct. SO PLEASE DONT JUDGE ME.
+
+
+### Prompt Example:
+Q3 Assume this needs to run in production with these constraints: – – – – 
+Cloud provider: Azure 
+Budget: £500/month 
+Latency requirement: <100ms per prediction 
+Expected traffic: 1000 predictions/hour initially 
+
+answer as per the model provided model.joblib. its quite lightweahgt so we dont need to change any thing in my current fastapi code. only thing i did change was compared to template provided was change endpoint to async.. so for  1000preduiction/hour will be easly possible in Azure Container Apps,.
+so based on my testing  it takes less than 3-4ms  (procing time)for endpoint to respond. excluiding the network latency. so if we sleect epay as you go plan. and set 1vcore and 1gb memory in container config. which is enough for 1000req/hour 
+which will cost
+NOTE: this is wost case senario always active. we can use unvicorn instend of gunicor which is enouigh for 1000 requst which will lower cost in idle. as gunicores has more idel cpu usases and ram.
+vCPU + 1 GiB, running the whole month (always “active”)
+
+Assume a 30-day month (2,592,000 seconds).
+
+
+
+Cost
+
+vCPU: 2,592,000  × 0.000024 = $62.208
+
+Memory: 2,592,000 × 0.000003 = $7.776
+
+✅ Total ≈ $69.984 / month
+
+so we are far under 500.
+
+
+write this as answer
