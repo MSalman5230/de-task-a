@@ -195,24 +195,6 @@ else:
 
 print("\n--- 4. OUTLIER DETECTION ---")
 
-# Outlier detection for transaction amounts using IQR method
-# Assumption: Using IQR method with 1.5x multiplier (standard approach)
-Q1 = transactions_df["amount"].quantile(0.25)
-Q3 = transactions_df["amount"].quantile(0.75)
-IQR = Q3 - Q1
-lower_bound = Q1 - 1.5 * IQR
-upper_bound = Q3 + 1.5 * IQR
-
-outliers = transactions_df[(transactions_df["amount"] < lower_bound) | (transactions_df["amount"] > upper_bound)]
-
-if len(outliers) > 0:
-    print(f"\n⚠️  Found {len(outliers)} potential outliers in transaction amounts (IQR method):")
-    print(f"Lower bound: {lower_bound:.2f}, Upper bound: {upper_bound:.2f}")
-    print(outliers[["transaction_id", "customer_id", "amount", "txn_type", "description"]])
-    data_quality_issues.append({"file": "transactions.csv", "issue": "Potential outliers in amounts", "count": len(outliers), "method": "IQR (1.5x multiplier)"})
-else:
-    print("\n✅ No outliers detected in transaction amounts (IQR method)")
-
 # Check for extremely large or small amounts
 # Assumption: Amounts should be reasonable (e.g., between -1,000,000 and 1,000,000)
 # This is a business rule assumption
