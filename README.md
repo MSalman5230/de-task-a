@@ -3,16 +3,13 @@
 A data engineering pipeline for predicting customer credit risk (90-day default prediction) using transaction data.
 
 ## Installation
-
+create venv using python -m venv .venv
+then activate it
 Install required dependencies:
 ```bash
-pip install fastapi uvicorn scikit-learn joblib pydantic
+pip install fastapi uvicorn scikit-learn joblib pydantic seaborn
 ```
-
-> **Note:** For Linux/Unix production deployments, also install `gunicorn`:
-> ```bash
-> pip install gunicorn
-> ```
+or intall requirements.txt
 
 ## Quick Start
 
@@ -49,10 +46,6 @@ See [feature_documentation.md](feature_documentation.md) for complete details.
 
 ## ML Inference API
 
-The FastAPI service provides a REST API for making credit risk predictions.
-
-- `api/app.py` - Local filesystem (development) (in production will change as it will load model from blob storage)
-
 ### API Endpoints
 
 - **GET `/health`** - Health check endpoint
@@ -85,7 +78,7 @@ The FastAPI service provides a REST API for making credit risk predictions.
 }
 ```
 
-# Part 3: Documentation and Questions Answers as per task
+# Questions Answers as per PDF
 
 
 ## **Q1. What part of the exercise did you find most challenging, and why?**
