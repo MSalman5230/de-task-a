@@ -337,7 +337,7 @@ An example of this workflow can be seen in `AI_TOOL_USAGES_EXAMPLE.txt` in the r
 
 **How it helped:** Significantly accelerated documentation writing while ensuring clarity and professionalism. It allowed me to focus on the technical content and ideas rather than spending time on formatting and grammar.
 
-**How it hindered:** Occasionally required multiple iterations to ensure the AI captured my exact technical intent, especially for cost calculations and specific Azure service configurations.
+**How it hindered:** Occasionally for this repo it tried to write code for azure deployment code which was not need so i had to delete them and keep reminding its not to write code.
 
 ### Code Development (data_prep/prepare_data.py)
 
