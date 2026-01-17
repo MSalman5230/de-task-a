@@ -85,7 +85,8 @@ The FastAPI service provides a REST API for making credit risk predictions.
 }
 ```
 
-## Challenges & Reflections
+## Part 3: Documentation As 
+
 
 **Q1. What part of the exercise did you find most challenging, and why?**
 
@@ -101,7 +102,53 @@ The tradeoffs varied by feature based on their importance for the 90-day default
 
 - **Flag Risky Spend**: Prioritized **speed and simplicity**. A single occurrence of gambling, betting, or crypto-related transactions flags a customer as risky. While a consistency-based approach (similar to salary) would be more accurate, the logical deduction is that even one instance of risky spending behavior indicates elevated risk—someone who gambles once is already showing signs of financial risk-taking behavior. This simpler approach balances detection speed with practical risk assessment.
 
+**Q3. Assume this needs to run in production with these constraints:**
+- Cloud provider: Azure
+- Budget: £500/month
+- Latency requirement: <100ms per prediction
+- Expected traffic: 1000 predictions/hour initially
 
+## Production Deployment Solution
+
+Given the lightweight nature of the `model.joblib` artifact and the current FastAPI implementation (which uses async endpoints) changes i made compared to the template provided, the service can easily handle 1000 predictions/hour on Azure Container Apps with minimal resource allocation.
+
+### Performance Characteristics
+
+Based on testing, the endpoint processing time is **3-4ms per prediction** (excluding network latency). This is well within the <100ms latency requirement, leaving ample headroom for network overhead and Azure infrastructure latency.
+
+### Recommended Deployment: Azure Container Apps
+
+**Configuration:**
+- **Plan**: Pay-as-you-go
+- **Resources**: 1 vCPU + 1 GiB memory
+- **Server**: Uvicorn (instead of Gunicorn) to minimize idle CPU and RAM usage, reducing costs during low-traffic periods
+
+This configuration is sufficient for handling 1000 requests/hour, with significant capacity headroom for traffic spikes.
+
+### Cost Analysis
+
+**Worst-case scenario (always active for 30 days):**
+
+Assume a 30-day month (2,592,000 seconds).
+
+**Billable seconds after free grant:**
+- vCPU: 2,592,000 − 180,000 = 2,412,000 vCPU-s
+- Memory: 2,592,000 − 360,000 = 2,232,000 GiB-s
+
+**Cost calculation:**
+- vCPU: 2,412,000 × $0.000024 = **$57.888**
+- Memory: 2,232,000 × $0.000003 = **$6.696**
+- **Total ≈ $64.584 / month** (approximately £51/month at current exchange rates)
+
+**Conclusion:** The deployment cost is **well under the £500/month budget**, providing significant cost headroom for scaling or additional Azure services (e.g., Application Insights, Log Analytics, or increased traffic).
+
+**High Availability & Redundancy:** Since we are well under budget, we can add multiple replicas (e.g., 2-3 instances) for redundancy and high availability. This ensures:
+- **Zero-downtime deployments**: Rolling updates can be performed without service interruption
+- **Fault tolerance**: If one replica fails, others continue serving traffic
+- **Load distribution**: Traffic is automatically distributed across replicas
+- **Cost impact**: Even with 2-3 replicas, the total cost remains well within the £500/month budget (~£102-£153/month for 2-3 replicas)
+
+**Note:** Using Uvicorn instead of Gunicorn further reduces idle costs, as Gunicorn has higher idle CPU usage and RAM consumption. For 1000 requests/hour, Uvicorn provides sufficient performance while maintaining lower operational costs during idle periods.
 
 **Q4. How would you deploy the FastAPI service and make the model artifact available?**
 ## Production Deployment Architecture
