@@ -108,15 +108,15 @@ The tradeoffs varied by feature based on their importance for the 90-day default
 - Latency requirement: <100ms per prediction
 - Expected traffic: 1000 predictions/hour initially
 
-### Production Deployment Solution
+#### Production Deployment Solution
 
 Given the lightweight nature of the `model.joblib` artifact and the current FastAPI implementation (which uses async endpoints) changes i made compared to the template provided, the service can easily handle 1000 predictions/hour on Azure Container Apps with minimal resource allocation.
 
-### Performance Characteristics
+#### Performance Characteristics
 
 Based on testing, the endpoint processing time is **3-4ms per prediction** (excluding network latency). This is well within the <100ms latency requirement, leaving ample headroom for network overhead and Azure infrastructure latency.
 
-### Recommended Deployment: Azure Container Apps
+#### Recommended Deployment: Azure Container Apps
 
 **Configuration:**
 - **Plan**: Pay-as-you-go
@@ -125,20 +125,16 @@ Based on testing, the endpoint processing time is **3-4ms per prediction** (excl
 
 This configuration is sufficient for handling 1000 requests/hour, with significant capacity headroom for traffic spikes.
 
-### Cost Analysis
+#### Cost Analysis
 
 **Worst-case scenario (always active for 30 days):**
 
 Assume a 30-day month (2,592,000 seconds).
 
-**Billable seconds after free grant:**
-- vCPU: 2,592,000 − 180,000 = 2,412,000 vCPU-s
-- Memory: 2,592,000 − 360,000 = 2,232,000 GiB-s
-
-**Cost calculation:**
-- vCPU: 2,412,000 × $0.000024 = **$57.888**
-- Memory: 2,232,000 × $0.000003 = **$6.696**
-- **Total ≈ $64.584 / month** (approximately £51/month at current exchange rates)
+**Cost calculation (without free grant):**
+- vCPU: 2,592,000 × $0.000024 = **$62.208**
+- Memory: 2,592,000 × $0.000003 = **$7.776**
+- **Total ≈ $69.984 / month** (approximately £56/month at current exchange rates)
 
 **Conclusion:** The deployment cost is **well under the £500/month budget**, providing significant cost headroom for scaling or additional Azure services (e.g., Application Insights, Log Analytics, or increased traffic).
 
@@ -146,15 +142,15 @@ Assume a 30-day month (2,592,000 seconds).
 - **Zero-downtime deployments**: Rolling updates can be performed without service interruption
 - **Fault tolerance**: If one replica fails, others continue serving traffic
 - **Load distribution**: Traffic is automatically distributed across replicas
-- **Cost impact**: Even with 2-3 replicas, the total cost remains well within the £500/month budget (~£102-£153/month for 2-3 replicas)
+- **Cost impact**: Even with 2-3 replicas, the total cost remains well within the £500/month budget (~£112-£168/month for 2-3 replicas)
 
 **Note:** Using Uvicorn instead of Gunicorn further reduces idle costs, as Gunicorn has higher idle CPU usage and RAM consumption. For 1000 requests/hour, Uvicorn provides sufficient performance while maintaining lower operational costs during idle periods.
 
-**Q4. How would you deploy the FastAPI service and make the model artifact available?**
+## **Q4. How would you deploy the FastAPI service and make the model artifact available?**
 ## Production Deployment Architecture
 For production at scale (millions of transaction rows), we deploy using a distributed, cloud-native architecture:
 
-### 1. Data Preparation (Databricks Spark)
+### 1. Data Preparation (Azure Databricks Spark)
 
 **Why Databricks Spark?** With millions of transaction rows, we need distributed computing to process data efficiently. Databricks provides managed Spark clusters with auto-scaling capabilities.
 
@@ -202,21 +198,21 @@ azure-blob://ml-models-prod/
 - **Versioning**: Blob versioning enables model rollback and A/B testing
 - **Cost-effective**: Pay only for storage and requests
 - **Security**: Managed identities and access policies for secure access control
-- **Integration**: Works seamlessly with Azure services (ECS, Azure Functions, VMs)
+- **Integration**: Works seamlessly with Azure services (Azure Container Apps, Azure Functions, VMs)
 
 ### 4. FastAPI Service Deployment
 
-**Container-based Deployment on Azure ECS:**
+**Container-based Deployment on Azure Container Apps:**
 
-The FastAPI service is deployed as a containerized application on Azure ECS for production workloads. The deployment process is automated through CI/CD:
+The FastAPI service is deployed as a containerized application on Azure Container Apps for production workloads. The deployment process is automated through CI/CD:
 
 - **Docker Image Build**: Docker images are automatically built and pushed to GitHub Container Registry (GHCR) via GitHub Actions workflow on every push to the main branch. The workflow is configured in `.github/workflows/docker-build.yml`.
 
-- **Container Configuration**: The Dockerfile configures the application to run with gunicorn using uvicorn workers, optimized for high-traffic production loads. The service runs with 4 worker processes to handle concurrent requests efficiently.
+- **Container Configuration**: The Dockerfile configures the application to run with Uvicorn, optimized for production loads. For the initial 1000 predictions/hour requirement, a single Uvicorn instance is sufficient and more cost-effective. For high-traffic scenarios, we can scale horizontally by adding more replicas and optionally switch to Gunicorn with multiple Uvicorn workers for increased throughput per container.
 
-- **Model Loading**: The FastAPI service loads models from blob storage (Azure Blob Storage) at startup, with fallback to local filesystem for local development. The service supports managed identity authentication for secure access to blob storage resources.
+- **Model Loading**: The FastAPI service loads models from blob storage (Azure Blob Storage) at startup
 
-- **Azure ECS Deployment**: The containerized application is deployed to Azure ECS, which provides auto-scaling capabilities, load balancing, and high availability for the inference service. ECS manages the container lifecycle and ensures the service remains available under varying traffic loads.
+- **Azure Container Apps Deployment**: The containerized application is deployed to Azure Container Apps, which provides auto-scaling capabilities, load balancing, and high availability for the inference service. Container Apps manages the container lifecycle and ensures the service remains available under varying traffic loads. The pay-as-you-go pricing model ensures cost efficiency, charging only for active compute time.
 
 ### Key Advantages of This Architecture
 
@@ -229,8 +225,8 @@ The FastAPI service is deployed as a containerized application on Azure ECS for 
 
 ### Model Updates & Rollback
 
-- **Update**: New model versions are uploaded to blob storage with versioned paths. The service can be configured to load a specific model version by updating the model path configuration and restarting the ECS service.
+- **Update**: New model versions are uploaded to blob storage with versioned paths. The service can be configured to load a specific model version by updating the model path configuration and restarting the Container Apps service.
 
-- **Rollback**: In case of model performance degradation, the service can be quickly rolled back to a previous model version by updating the model path configuration to point to the previous version and restarting the service.
+- **Rollback**: In case of model performance degradation, the service can be quickly rolled back to a previous model version by updating the model path configuration to point to the previous version and restarting the Container Apps service.
 
-- **A/B Testing**: Multiple ECS service instances can be deployed with different model versions, allowing traffic to be routed between different model versions for performance comparison and gradual rollout strategies.
+- **A/B Testing**: Multiple Container Apps revisions can be deployed with different model versions, allowing traffic to be routed between different model versions for performance comparison and gradual rollout strategies.
