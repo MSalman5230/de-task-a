@@ -318,3 +318,45 @@ Since this question could refer to either the API server (inference service) or 
 - **Model Loading Failures**: Network/authentication issues prevent loading models from blob storage
 - **Resource Exhaustion**: High traffic causes memory/CPU exhaustion, leading to service degradation
 - **Version Mismatches**: New model versions expect different features than the API provides
+
+## **Q7. If you used AI tools such as ChatGPT, Claude, Copilot, or any other tools:**
+**Where and how did you use them? (e.g., boilerplate code, debugging, syntax help)**
+**How did they help or hinder your process?**
+
+I used **Cursor** and **Google Gemini** throughout this project. Here's how I leveraged them:
+
+### Documentation and Question Answers (README.md)
+
+For writing the README and answering questions (Q1-Q6), I primarily used AI tools to help structure and refine my ideas. I would provide rough notes, bullet points, and key concepts, and the AI would help:
+- Structure the content into coherent paragraphs
+- Improve grammar and clarity
+- Format technical details properly
+- Expand on ideas while maintaining my original intent
+
+An example of this workflow can be seen in `AI_TOOL_USAGES_EXAMPLE.txt` in the repository, where I provided rough notes about Q3 (production deployment constraints) with typos and incomplete thoughts, and the AI helped transform it into a well-structured, professional answer.
+
+**How it helped:** Significantly accelerated documentation writing while ensuring clarity and professionalism. It allowed me to focus on the technical content and ideas rather than spending time on formatting and grammar.
+
+**How it hindered:** Occasionally required multiple iterations to ensure the AI captured my exact technical intent, especially for cost calculations and specific Azure service configurations.
+
+### Code Development (data_prep/prepare_data.py)
+
+For writing the feature engineering code in `data_prep/prepare_data.py`, I used a similar approach:
+- I would describe the features I needed (e.g., "flag_risky_spend" and provide the keywords it should look for in the description)
+- The AI would generate the Python syntax and implementation code
+- I would review and refine the logic to ensure it matched my requirements
+
+**How it helped:** 
+- Rapid prototyping of feature engineering logic
+- Syntax assistance for pandas operations and data transformations
+- Code structure and best practices suggestions
+- Reduced time spent on boilerplate code
+
+**How it hindered:** 
+For writing code in this repo, there was not much hindrance as it's simple. However, in my experience working with large repos, AI tends to make things overly complicated or sometimes does not write code that is easy to maintain, i.e., robust for adding features in the future, so I need to add that to the prompt or I sometimes write code manually.
+
+### Overall Assessment
+
+AI tools were instrumental in accelerating both documentation and code development. They served as a force multiplier, allowing me to focus on the high-level design and technical decisions while delegating syntax, formatting, and structure to the AI. The key was maintaining active oversight and iterative refinement to ensure the output matched my requirements and technical standards.
+
+## NOTE: One thing you should know about me. I never commit code that I don't understand the logic for. That's my motto.
