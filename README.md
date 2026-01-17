@@ -27,7 +27,7 @@ A data engineering pipeline for predicting customer credit risk (90-day default 
 ### Running the Pipeline
 
 1. **Check data quality:**
-   Open `Data_Quality_Check.ipynb` in Jupyter Notebook or JupyterLab.
+   Open `Data_Quality_Check.ipynb` in Jupyter Notebook.
    This notebook checks the data quality of the provided datasets (transactions and labels), including:
    - Missing values (nulls)
    - Duplicate records
@@ -42,7 +42,7 @@ A data engineering pipeline for predicting customer credit risk (90-day default 
    This generates `artifacts/training_set.csv` with engineered features.
 
 3. **Explore the data:**
-   Open `Exploratory_Data_Analysis.ipynb` in Jupyter Notebook or JupyterLab.
+   Open `Exploratory_Data_Analysis.ipynb` in Jupyter Notebook.
 
 4. **Run the ML Inference API:**
    ```bash
@@ -68,7 +68,7 @@ See [feature_documentation.md](feature_documentation.md) for complete details.
 
 ## ML Inference API
 
-**Note:** The `api/app.py` template provided in the zip file was already working. The only modification made was adding `async` to the endpoint functions for improved performance.
+**Note:** The `api/app.py` template provided in the zip file was already working. The only modification made was adding `async` to the endpoint functions for improved performance. and wrote github action to create docker image when changes push to main branch.
 
 **Important:** The model expects data in the format specified in the PDF (not the engineered features created in the data preparation pipeline). The model was not retrained with the engineered features because:
 - There's no point creating a model with only 11 rows of data
