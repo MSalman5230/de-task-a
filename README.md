@@ -147,18 +147,11 @@ Assume a 30-day month (2,592,000 seconds).
 **Note:** Using Uvicorn instead of Gunicorn further reduces idle costs, as Gunicorn has higher idle CPU usage and RAM consumption. For 1000 requests/hour, Uvicorn provides sufficient performance while maintaining lower operational costs during idle periods.
 
 ## **Q4. How would you deploy the FastAPI service and make the model artifact available?**
-## Production Deployment Architecture
-For production at scale (millions of transaction rows), we deploy using a distributed, cloud-native architecture:
+#### Production Deployment Architecture
 
-### 1. Data Preparation (Azure Databricks Spark)
+#### 1. Data Preparation (Azure Databricks Spark)
 
-**Why Databricks Spark?** With millions of transaction rows, we need distributed computing to process data efficiently. Databricks provides managed Spark clusters with auto-scaling capabilities.
-
-```python
-# Databricks notebook: data_prep/prepare_data_spark.py
-# Runs the feature engineering pipeline on Spark DataFrame
-# Handles millions of rows with distributed processing
-```
+**Why Databricks Spark?** With millions of transaction rows, we need distributed computing to process data efficiently. Databricks provides managed Spark clusters with auto-scaling capabilities. We will write a similar notebook to `prepare_data.py` for Databricks using PySpark.
 
 **Training Dataset Export:**
 - **Format: Delta Lake** (recommended over CSV)
@@ -171,7 +164,7 @@ For production at scale (millions of transaction rows), we deploy using a distri
   - Each version includes metadata: feature schema, data quality metrics, creation timestamp
 
 ### 2. Model Training (Databricks or Azure ML)
-
+**Use Databricks or Azure ML**
 **Training Pipeline:**
 - Loads versioned training dataset from Delta Lake
 - Trains model (e.g., XGBoost, Random Forest) with hyperparameter tuning
@@ -210,7 +203,18 @@ The FastAPI service is deployed as a containerized application on Azure Containe
 
 - **Container Configuration**: The Dockerfile configures the application to run with Uvicorn, optimized for production loads. For the initial 1000 predictions/hour requirement, a single Uvicorn instance is sufficient and more cost-effective. For high-traffic scenarios, we can scale horizontally by adding more replicas and optionally switch to Gunicorn with multiple Uvicorn workers for increased throughput per container.
 
-- **Model Loading**: The FastAPI service loads models from blob storage (Azure Blob Storage) at startup
+- **Model Loading**: The FastAPI service loads models from blob storage (Azure Blob Storage) at startup. The model path can be specified via container environment variables (e.g., `MODEL_PATH=azure-blob://ml-models-prod/credit-risk/v1.0/model.joblib`), which can be easily changed without rebuilding the container. Alternatively, a POST endpoint can be implemented to dynamically load a specific model version:
+
+  ```bash
+  POST /load-model
+  Content-Type: application/json
+  
+  {
+    "model_path": "azure-blob://ml-models-prod/credit-risk/v1.1/model.joblib"
+  }
+  ```
+  
+  This allows for runtime model updates without container restarts, enabling A/B testing and gradual rollouts.
 
 - **Azure Container Apps Deployment**: The containerized application is deployed to Azure Container Apps, which provides auto-scaling capabilities, load balancing, and high availability for the inference service. Container Apps manages the container lifecycle and ensures the service remains available under varying traffic loads. The pay-as-you-go pricing model ensures cost efficiency, charging only for active compute time.
 
