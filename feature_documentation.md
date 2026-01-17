@@ -4,6 +4,8 @@
 
 This document explains the features engineered for predicting customer credit risk, specifically whether a customer will default within 90 days. Each feature is designed to capture different aspects of customer financial behavior patterns that are predictive of default risk.
 
+> **Data Assumption:** We assume that the transactions mentioned in this dataset reflect all transactions of a specific user. That is, this combination of transactions represents either all transactions across all accounts for that user, or this is their only account. This assumption is important for interpreting the features, as incomplete transaction data could lead to misleading feature values.
+
 > **Important Note:** The features described in this document are based on assumptions and hypotheses that these features may help in predicting default risk. With more data, we could use correlation analysis (such as Pearson coefficient) with the target variable to test our hypotheses. However, due to limited data availability, we cannot perform such statistical validation at this stage.
 
 **Target Variable:** `defaulted_within_90d` (binary: 0 = no default, 1 = defaulted within 90 days)
