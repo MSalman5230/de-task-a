@@ -2,27 +2,49 @@
 
 A data engineering pipeline for predicting customer credit risk (90-day default prediction) using transaction data.
 
-## Installation
-create venv using python -m venv .venv
-then activate it
-Install required dependencies:
-```bash
-pip install fastapi uvicorn scikit-learn joblib pydantic seaborn
-```
-or intall requirements.txt
+
 
 ## Quick Start
 
-1. **Prepare the data:**
+### Installation
+
+1. Create a virtual environment:
+   ```bash
+   python -m venv .venv
+   ```
+
+2. Activate the virtual environment as per your OS/IDE:
+
+3. Install required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   Or install manually:
+   ```bash
+   pip install fastapi uvicorn scikit-learn joblib pydantic seaborn pandas
+   ```
+
+### Running the Pipeline
+
+1. **Check data quality:**
+   Open `Data_Quality_Check.ipynb` in Jupyter Notebook or JupyterLab.
+   This notebook checks the data quality of the provided datasets (transactions and labels), including:
+   - Missing values (nulls)
+   - Duplicate records
+   - Outliers
+   - Data type issues
+   - Referential integrity issues
+
+2. **Prepare the data (THE DATA PIPELINE):**
    ```bash
    python data_prep/prepare_data.py
    ```
    This generates `artifacts/training_set.csv` with engineered features.
 
-2. **Explore the data:**
+3. **Explore the data:**
    Open `Exploratory_Data_Analysis.ipynb` in Jupyter Notebook or JupyterLab.
 
-3. **Run the ML Inference API:**
+4. **Run the ML Inference API:**
    ```bash
    uvicorn api.app:app --host 0.0.0.0 --port 8000 --reload
    ```
@@ -46,12 +68,14 @@ See [feature_documentation.md](feature_documentation.md) for complete details.
 
 ## ML Inference API
 
+**Note:** The `api/app.py` template provided in the zip file was already working. The only modification made was adding `async` to the endpoint functions for improved performance.
+
+**Important:** The model expects data in the format specified in the PDF (not the engineered features created in the data preparation pipeline). The model was not retrained with the engineered features because:
+- There's no point creating a model with only 11 rows of data
+- The PDF/question did not mention training a model
+
 ### API Endpoints
 
-- **GET `/health`** - Health check endpoint
-  ```bash
-  curl http://localhost:8000/health
-  ```
 
 - **POST `/predict`** - Predict credit risk probability
   ```bash
@@ -79,7 +103,6 @@ See [feature_documentation.md](feature_documentation.md) for complete details.
 ```
 
 # Questions Answers as per PDF
-
 
 ## **Q1. What part of the exercise did you find most challenging, and why?**
 
