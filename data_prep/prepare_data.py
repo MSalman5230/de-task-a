@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     # Why: Identifies customers with regular, consistent income sources (payroll, salary, etc.).
     # Logic: Customer must have at least one salary-related transaction in 90% of months
-    # where they have transaction records.
+    # where they have credit transaction records.
     # Credit Risk: Consistent salary indicates stable employment and predictable income,
     # which significantly reduces default risk. Irregular income patterns are associated
     # with higher default rates.
@@ -177,12 +177,13 @@ if __name__ == "__main__":
     salary_keywords = ["payroll", "salary", "dividend", "dwp", "payout", "bonus"]
     salary_pattern = "|".join([rf"\b{kw}\b" for kw in salary_keywords])
 
-    # Identify salary transactions
-    tx["is_salary"] = tx["clean_desc"].str.contains(salary_pattern, case=False, na=False).astype(int)
+    # Identify salary transactions - only in credit transactions (amount > 0)
+    tx_credits = tx[tx["amount"] > 0].copy()
+    tx_credits["is_salary"] = tx_credits["clean_desc"].str.contains(salary_pattern, case=False, na=False).astype(int)
 
-    # Group by customer and month
-    tx["year_month"] = tx["txn_timestamp"].dt.to_period("M")
-    monthly_salary = tx.groupby(["customer_id", "year_month"]).agg(has_salary=("is_salary", "max")).reset_index()
+    # Group by customer and month (only credit transactions)
+    tx_credits["year_month"] = tx_credits["txn_timestamp"].dt.to_period("M")
+    monthly_salary = tx_credits.groupby(["customer_id", "year_month"]).agg(has_salary=("is_salary", "max")).reset_index()
 
     # Calculate salary consistency
     salary_consistency = (
