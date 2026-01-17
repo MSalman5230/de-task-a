@@ -169,7 +169,7 @@ Standard deviation of transaction amounts would be more informative because:
 
 **Why:** Identifies customers with regular, consistent income sources (payroll, salary, etc.).
 
-**Logic:** Customer must have at least one salary-related transaction in 90% of months where they have transaction records.
+**Logic:** Customer must have at least one salary-related transaction in 90% of months where they have credit transaction records.
 
 **Keywords Detected:** `payroll`, `salary`, `dividend`, `dwp`, `payout`, `bonus`
 
@@ -179,10 +179,13 @@ Standard deviation of transaction amounts would be more informative because:
 - Binary flag: 1 = consistent salary (90%+ of months), 0 = inconsistent or no salary pattern
 
 **Calculation:**
-1. Identify salary-related transactions using keyword matching
-2. Group transactions by customer and month
-3. Calculate the ratio of months with salary transactions to total months with transactions
-4. Flag as 1 if ratio >= 0.9, else 0
+1. Filter to only credit transactions (amount > 0) - salary/income only comes from credits
+2. Identify salary-related transactions using keyword matching on credit transactions
+3. Group credit transactions by customer and month
+4. Calculate the ratio of months with salary transactions to total months with credit transactions
+5. Flag as 1 if ratio >= 0.9, else 0
+
+**Important:** Only credit transactions (incoming money) are considered, as salary/income should only be identified in money coming into the account, not outgoing transactions.
 
 **Why This Matters:**
 - Employment stability is a key predictor of creditworthiness
