@@ -4,6 +4,8 @@
 
 This document explains the features engineered for predicting customer credit risk, specifically whether a customer will default within 90 days. Each feature is designed to capture different aspects of customer financial behavior patterns that are predictive of default risk.
 
+> **Important Note:** The features described in this document are based on assumptions and hypotheses that these features may help in predicting default risk. With more data, we could use correlation analysis (such as Pearson coefficient) with the target variable to test our hypotheses. However, due to limited data availability, we cannot perform such statistical validation at this stage.
+
 **Target Variable:** `defaulted_within_90d` (binary: 0 = no default, 1 = defaulted within 90 days)
 
 ---
@@ -23,71 +25,40 @@ The features are organized into three main categories:
 
 ### Feature 1: Number of Transactions (`txn_count`)
 
-**Why:** Higher transaction volume may indicate active account usage and financial engagement.
-
-**Credit Risk Interpretation:**
-- Customers with very few transactions may have inactive accounts or financial instability
-- Moderate to high transaction counts suggest regular financial activity
-- However, this feature alone doesn't tell the whole story
+**Why:** Higher transaction volume may indicate active account usage and financial engagement. Customers with very few transactions may have inactive accounts or financial instability.
 
 **Better Alternative: Transactions per Month**
 
 Transactions per month would be more informative because:
 - It normalizes for account age (a customer with 100 transactions over 1 year vs 10 years have very different activity levels)
 - It captures transaction frequency patterns that are more predictive of financial stability
-- It allows for seasonality analysis (e.g., higher spending during holidays, which is normal vs. consistently high spending which may indicate financial stress)
 - Customers with consistent monthly transaction patterns are typically lower risk
 
 ---
 
 ### Feature 2: Total Debit (`total_debit`)
 
-**Why:** Total debit represents total spending over the customer's transaction history.
-
-**Credit Risk Interpretation:**
-- Higher absolute debit amounts may indicate higher spending levels
-- However, absolute values don't account for income scale differences
-- Must be considered in context with total credit to assess financial health
-
-**Limitations:**
-- Absolute spending amounts are less informative without income context
-- A $10,000 debit is very different for someone earning $2,000 vs $20,000 per month
-- Better used in combination with total credit or as part of the debit-to-credit ratio
+**Why:** Total debit represents total spending over the customer's transaction history. Absolute spending amounts are less informative without income context and should be considered in combination with total credit or as part of the debit-to-credit ratio.
 
 ---
 
 ### Feature 3: Total Credit (`total_credit`)
 
-**Why:** Total credit represents total income received over the customer's transaction history.
-
-**Credit Risk Interpretation:**
-- Higher credit amounts generally indicate higher income levels
-- However, absolute values don't capture income stability or recent trends
-- Must be considered in context with total debit to assess financial health
-
-**Limitations:**
-- Absolute income amounts are less informative without spending context
-- Doesn't capture income recency or stability patterns
-- Better used in combination with total debit or as part of the debit-to-credit ratio
+**Why:** Total credit represents total income received over the customer's transaction history. Absolute income amounts don't capture income recency or stability patterns and should be considered in context with total debit or as part of the debit-to-credit ratio.
 
 ---
 
 ### Feature 4: Average Transaction Amount (`avg_amount`)
 
-**Why:** Captures typical transaction size, indicating spending patterns and financial capacity.
-
-**Credit Risk Interpretation:**
-- Extremely high or volatile average amounts may indicate financial stress or irregular income patterns
-- However, average alone can be misleading due to outliers
+**Why:** Captures typical transaction size, indicating spending patterns and financial capacity. However, average alone can be misleading due to outliers.
 
 **Better Alternative: Standard Deviation of Transaction Amounts**
 
 Standard deviation of transaction amounts would be more informative because:
-- Average can be skewed by outliers (e.g., one large salary payment inflates the average)
 - Standard deviation captures transaction amount variability/volatility, which is a stronger predictor of financial instability
 - High variability indicates irregular income/spending patterns (e.g., inconsistent salary payments, irregular large purchases), which correlates with higher default risk
 - Low variability suggests consistent, predictable financial behavior (lower risk)
-- Combined with average, std dev provides both scale and consistency measures
+- Can be split on debit and credit amounts for better predictability
 
 **Example:** A customer with avg $1000 but std dev of $500 (high variability) is riskier than one with avg $1000 and std dev of $50 (low variability)
 
@@ -160,6 +131,7 @@ Standard deviation of transaction amounts would be more informative because:
 - Ratio = 0: No income in last 30 days (very high risk)
 
 **Why This Matters:**
+- While Feature 6 (Days Since Last Credit) indicates whether a user received payment, this feature indicates whether what they received is adequate
 - Customers with declining income are more likely to default as their financial situation deteriorates
 - This feature captures temporal trends that static features (like total credit) cannot
 
@@ -283,39 +255,6 @@ Standard deviation of transaction amounts would be more informative because:
 
 ---
 
-## Feature Engineering Strategy
-
-### Temporal Features (High Priority)
-- **Days Since Last Credit** and **Income Stability Ratio** are critical because:
-  - The target variable is "defaulted within 90 days" - recency matters
-  - Income trends predict future financial stability
-  - These features capture dynamic financial health
-
-### Behavioral Flags (Medium-High Priority)
-- **Flag Consistent Salary** is highly predictive of stable income
-- **Flag Risky Spend** indicates poor financial decision-making
-- Housing and subscription flags provide context but require combination with other features
-
-### Required Features (Lower Priority)
-- Basic aggregations (Features 1-4: txn_count, total_debit, total_credit, avg_amount) are required but less informative
-- **Feature 5: Debit to Credit Ratio** derived from required features (total_debit, total_credit) is highly predictive
-
----
-
-## Model Considerations
-
-### Tree-Based Models (XGBoost, Random Forest)
-- Variables like `days_since_last_credit` are kept in continuous form because tree-based models perform better with continuous variables
-- All features work well, especially:
-  - `days_since_last_credit` (excellent for splits)
-  - `income_stability_ratio` (captures trends)
-  - `debit_to_credit_ratio` (clear thresholds)
-
-### Regression Models
-- If required, continuous variables (e.g., `days_since_last_credit`) can be converted from continuous to binary or one-hot encoded for regression-based models
-- May also benefit from:
-  - Log transformations for skewed features
-  - Interaction terms (e.g., `flag_rent_mortgage * income_stability_ratio`)
 
 
 ---
