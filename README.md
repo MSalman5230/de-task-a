@@ -200,8 +200,11 @@ azure-blob://ml-models-prod/
 │   │   ├── metadata.json (model version, training date, metrics)
 │   │   └── feature_schema.json
 │   ├── v1.1/
-│   │   └── ...
-│   └── latest/ -> v1.1/ (reference to latest version)
+│   │   ├── model.joblib
+│   │   ├── metadata.json
+│   │   └── feature_schema.json
+│   └── v1.2/
+│       └── ...
 ```
 
 **Benefits:**
