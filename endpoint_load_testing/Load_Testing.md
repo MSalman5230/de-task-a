@@ -31,10 +31,6 @@ A high-performance load testing tool written in Go that can test your FastAPI `/
 - `-url <url>`: API endpoint URL (default: http://localhost:8000/predict)
 
 
-
-
-
-
 ### Python Version
 
 ```bash
