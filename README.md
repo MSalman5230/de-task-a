@@ -168,7 +168,7 @@ Assume a 30-day month (2,592,000 seconds).
 
 ## **Q4. How would you deploy the FastAPI service and make the model artifact available?**
 
-Here I will explain how I envision this full stack will be deployed while keeping in mind scalability, cost, and the Azure platform.
+Here I will explain how I envision this full project will be deployed while keeping in mind scalability, cost, and the Azure platform.
 
 #### 1. Data Preparation (Azure Databricks Spark)
 
