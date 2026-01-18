@@ -242,6 +242,9 @@ The FastAPI service is deployed as a containerized application on Azure Containe
 
 - **Azure Container Apps Deployment**: The containerized application is deployed to Azure Container Apps, which provides auto-scaling capabilities, load balancing, and high availability for the inference service. Container Apps manages the container lifecycle and ensures the service remains available under varying traffic loads. The pay-as-you-go pricing model ensures cost efficiency, charging only for active compute time.
 
+- **Ingress Configuration**: Depending on how the API will be used, the Ingress setting in Azure Container Apps must be configured appropriately:
+  - **External Access**: If the API needs to be accessed from outside the Azure environment
+
 #### Key Advantages of This Architecture
 
 1. **Scalability**: Databricks Spark handles millions of rows; Azure Blob Storage scales to any model size
