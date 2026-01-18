@@ -1,6 +1,7 @@
 # Load Tester for FastAPI Predict Endpoint
 
 A high-performance load testing tool written in Go that can test your FastAPI `/predict` endpoint and measure requests per second (RPS). Also includes a Python version for comparison (Python version not fast enough to call high request per sec).
+**NOTE**: These testing performance numbers do not reflect that we will get the same numbers in a cloud environment. This is just for fun.
 
 
 ## Quick Start
