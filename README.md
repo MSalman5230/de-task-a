@@ -236,7 +236,7 @@ azure-blob://ml-models-prod/
 
 The FastAPI service is deployed as a containerized application on Azure Container Apps for production workloads. The deployment process is automated through CI/CD:
 
-- **Docker Image Build**: Docker images are automatically built and pushed to GitHub Container Registry (GHCR) via GitHub Actions workflow on every push to the main branch. The workflow is configured in `.github/workflows/docker-build.yml`.
+- **Docker Image Build**: Docker images are automatically built and pushed to GitHub Container Registry (GHCR) via GitHub Actions workflow on every push to the main branch. The workflow is configured in `.github/workflows/docker-build.yml`. By updating the GitHub Actions workflow, we can extend it to automatically push images to Azure Container Registry (ACR) and deploy to Azure Container Apps, enabling complete automated CI/CD from code push to production deployment.
 
 - **Container Configuration**: The Dockerfile configures the application to run with Uvicorn, optimized for production loads. For the initial 1000 predictions/hour requirement, a single Uvicorn instance is sufficient and more cost-effective. For high-traffic scenarios, we can scale horizontally by adding more replicas and optionally switch to Gunicorn with multiple Uvicorn workers for increased throughput per container.
 
