@@ -125,7 +125,8 @@ LOAD TEST RESULTS
 ## Performance Comparison
 
 - **Python version**: ~300-350 RPS (limited by GIL and async overhead)
-- **Go version**: ~2000-2500 RPS (depending on API response time)
+- **Go version**: ~2000-2300 RPS (depending on API response time) Limited by Unicorn.
+                  ~21000-22000 RPS with Gunicorn 4 worker with 13900k
 
 ## Success Criteria
 
