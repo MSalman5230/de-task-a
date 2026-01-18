@@ -41,11 +41,6 @@ A high-performance load testing tool written in Go that can test your FastAPI `/
 # Default: 10 workers, 60 seconds
 python test_predict_endpoint.py
 
-# Custom number of workers
-python test_predict_endpoint.py 50
-
-# Custom workers and URL
-python test_predict_endpoint.py 50 http://localhost:8000/predict
 ```
 
 ### Command Line Flags (Go version)
@@ -95,7 +90,7 @@ LOAD TEST RESULTS
 
 - **Python version**: ~300-350 RPS (limited by GIL and async overhead)
 - **Go version**: ~2000-2300 RPS (depending on API response time) Limited by Unicorn.
-                  ~21000-22000 RPS with Gunicorn 4 worker with 13900k
+                  ~21000-22000 RPS with Gunicorn 4 worker with 13900K CPU
 
 ## Success Criteria
 
