@@ -381,4 +381,4 @@ For writing code in this repo, there was not much hindrance as it's simple. Howe
 
 AI tools were instrumental in accelerating both documentation and code development. They served as a force multiplier, allowing me to focus on the high-level design and technical decisions while delegating syntax, formatting, and structure to the AI. The key was maintaining active oversight and iterative refinement to ensure the output matched my requirements and technical standards.
 
-## NOTE: One thing you should know about me. I never commit code that I don't understand the logic for. That's my motto.
+### NOTE: I never commit code that I don't understand the logic for.
