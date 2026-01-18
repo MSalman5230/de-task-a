@@ -117,9 +117,9 @@ The sparse transaction history limited the ability to extract meaningful tempora
 
 The tradeoffs varied by feature based on their importance for the 90-day default prediction task:
 
-- **Flag Consistent Salary**: Prioritized **accuracy and completeness**. Since consistent income is critical for predicting default within 90 days, the feature requires salary transactions in at least 90% of months where the customer has transaction records. This rigorous threshold ensures we capture true income stability rather than occasional salary payments.
+- **Flag Consistent Salary**: This calculation is complex, so it requires more processing. Prioritized **accuracy and completeness**. Since consistent income is critical for predicting default within 90 days, the feature requires salary transactions in at least 90% of months where the customer has transaction records. This rigorous threshold ensures we capture true income stability rather than occasional salary payments.
 
-- **Flag Risky Spend**: Prioritized **speed and simplicity**. A single occurrence of gambling, betting, or crypto-related transactions flags a customer as risky. While a consistency-based approach (similar to salary) would be more accurate, the logical deduction is that even one instance of risky spending behavior indicates elevated risk—someone who gambles once is already showing signs of financial risk-taking behavior. This simpler approach balances detection speed with practical risk assessment.
+- **Flag Risky Spend**: I tried to keep it simple and fast data processing (i.e., speed). Prioritized **speed and simplicity**. A single occurrence of gambling, betting, or crypto-related transactions flags a customer as risky. While a consistency-based approach (similar to salary) would be more accurate, the logical deduction is that even one instance of risky spending behavior indicates elevated risk—someone who gambles once is already showing signs of financial risk-taking behavior. This simpler approach balances data preparation speed with practical risk assessment.
 
 ## **Q3. Assume this needs to run in production with these constraints:**
 - Cloud provider: Azure
