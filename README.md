@@ -184,6 +184,19 @@ Here I will explain how I envision this full stack will be deployed while keepin
 - **Versioning Strategy**: `training_set/v1.0/`, `training_set/v1.1/`, etc.
   - Each version includes metadata: feature schema, data quality metrics, creation timestamp
 
+**Feature Engineering for Multiple Model Types:**
+Delta tables are used to store **versioned training datasets** optimized for different model architectures while sharing the same underlying source data.
+
+- **Regression and Neural Networks**  
+  These models benefit from **normalized or standardized features** for stable and efficient training. Scaled feature versions are stored in dedicated Delta tables.  
+  Example: `training_set_regression/v1.0/`
+
+- **Tree-based Models** (XGBoost, Random Forest)  
+  Tree-based models do **not require feature normalization** and perform well on raw continuous features. These datasets are stored without scaling.  
+  Example: `training_set_tree/v1.0/`
+
+This approach enables reuse of source data, supports multiple model types, and ensures reproducibility through dataset versioning.
+
 #### 2. Model Training (Databricks or Azure ML)
 **Use Databricks or Azure ML**
 **Training Pipeline:**
