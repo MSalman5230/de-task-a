@@ -9,6 +9,7 @@ A data engineering pipeline for predicting customer credit risk (90-day default 
 - **[Null Data Handling Strategy](null_data_handling_strategy.md)** - Strategy for handling missing values in labels and transactions datasets
 - **[Exploratory Data Analysis](Exploratory_Data_Analysis.ipynb)** - Exploratory analysis/visualization of the transaction data and feature distributions
 - **[Answers to Questions from PDF](#questions-answers-as-per-pdf)** - Answers to the questions asked in the PDF task specification
+- **[Load Testing Tools](endpoint_load_testing/Load_Testing.md)** - I was curious about how much I could push a FastAPI server, so I made high-performance load testing tools (Go and Python) to measure requests per second
 ---
 
 ## Quick Start
